@@ -61,19 +61,8 @@ async def new_user(user: UserInput):
     logger.info('Отработан POST запрос. Пользователь успешно добавлен.')
     return users
     
-# @app.delete("/users/{id}", response_model=str)
-# async def delete_i(id: int): # , new_user: UserInput
-#     if len(users)<id:
-#         raise HTTPException(status_code=404, detail="User not found")
-#     for user in users:
-#         if user.id == id:
-#             users.remove(user)
-#             logger.info(f'Отработан DELETE запрос на удаление пользователя {id}.')
-#             return f'Пользователь {id} удален'  
 @app.delete("/users/{id}", response_model=str)
 async def delete_i(id: int): # , new_user: UserInput
-    # if len(users)<id:
-    #     raise HTTPException(status_code=404, detail="User not found")
     for user in users:
         if user.id == id:
             users.remove(user)
