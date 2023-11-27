@@ -19,8 +19,8 @@ from fastapi import FastAPI, HTTPException
 from typing import Optional
 from pydantic import BaseModel  # импортируем функцию создания базовой модели для создания класса User
 
-logging.basicConfig(level=logging.INFO)  #   - создание базовой конфигурации
-logger = logging.getLogger(__name__)     #   - для логирования вывода
+logging.basicConfig(level=logging.INFO)  #   - создание базовой конфигурации...
+logger = logging.getLogger(__name__)     #   - ...для логирования вывода
 
 app = FastAPI()
 
@@ -30,22 +30,22 @@ class User(BaseModel):     # Класс User с полями id, name, email и 
     email: Optional[str] 
     password: Optional[str]
 
-class UserInput(BaseModel):     
+class UserInput(BaseModel):     # Класс UserInput с полями name, email и password. 
     name: Optional[str]
     email: Optional[str]  
     password: Optional[str]
 
-users = [] # Список пользователей. # User(id = 0, name ='New0', email = 'for id_0', password = '')
+users = [] # Список пользователей. 
 
 @app.get("/users/")
 async def get_users():    # Маршрут для получения списка задач (метод GET).
     logger.info('Отработан GET запрос на получение списка пользователей.')
     return users
 
-@app.get("/users/{id}")
+@app.get("/users/{id}")   # Маршрут для получения одного пользователя (метод GET).
 async def read_user(id: int):
     if len(users)<id:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
     logger.info('Отработан GET запрос на получение одного пользователя.')   
     return users[id-1]
 
@@ -61,17 +61,17 @@ async def new_user(user: UserInput):
     logger.info('Отработан POST запрос. Пользователь успешно добавлен.')
     return users
     
-@app.delete("/users/{id}", response_model=str)
+@app.delete("/users/{id}", response_model=str)   # Маршрут для удаления пользователя (метод DELETE)
 async def delete_i(id: int): # , new_user: UserInput
     for user in users:
         if user.id == id:
             users.remove(user)
             logger.info(f'Отработан DELETE запрос на удаление пользователя {id}.')
             return f'Пользователь {id} удален' 
-    raise HTTPException(status_code=404, detail="User not found")
+    raise HTTPException(status_code=404, detail="Пользователь не найден")
 
 @app.put("/users/{id}", response_model=UserInput)
-def edit_task(id: int, new_user: UserInput):
+def edit_task(id: int, new_user: UserInput):  # Маршрут для изменения пользователя (метод PUT)
     for user in users:
         if user.id == id:
             user.name = new_user.name
@@ -79,7 +79,7 @@ def edit_task(id: int, new_user: UserInput):
             user.password = new_user.password
             logger.info(f'Отработан PUT запрос на изменение пользователя {id}.')
             return user  
-    raise HTTPException(status_code=404, detail="Task not found")
+    raise HTTPException(status_code=404, detail="Пользователь не найден")
     
 """основа"""
 if __name__ == '__main__': 
