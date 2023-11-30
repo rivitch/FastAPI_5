@@ -114,8 +114,8 @@ async def create_note(count: int):
 # 1. Создание пользователя в БД, create
 @app.post("/users/", response_model=User)
 async def create_user(user: UserIn):
-    query = users.insert().values(**user.dict())  # insert -вставить    #    ... идентичны \  превращение модели в питоновский словарь, ** - распаковка словаря  
-    last_record_id = await database.execute(query) # асинхроныый запрос, передача запроса в команду execute - выполнить и запись в переменную last_record_id
+    query = users.insert().values(**user.dict())  
+    last_record_id = await database.execute(query)
     return {**user.dict(), "id": last_record_id}
 
 # 2. Чтение пользователей из БД, read
@@ -126,7 +126,7 @@ async def read_users():
 
 # 2a. Выборка из базы данных
 @app.get("/users/", response_model=List[User])
-async def get_items(skip: int, limit: int):  # выборка - получить limit записей начиная с skip адреса(пропустив skip записей)
+async def get_items(skip: int, limit: int): 
     query = users.select().offset(skip).limit(limit)
     results = await database.fetch_all(query)
     return [dict(result) for result in results]
