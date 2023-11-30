@@ -18,7 +18,7 @@ metadata = sqlalchemy.MetaData()
 users = sqlalchemy.Table(   # Table - класс для создания таблицы   
     "users",
     metadata,
-    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),   # поле id целого типа, заполняется автоматически
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),   
     sqlalchemy.Column("first_name", sqlalchemy.String(32)),
     sqlalchemy.Column("second_name", sqlalchemy.String(32)),
     sqlalchemy.Column("email", sqlalchemy.String(32)),
@@ -29,7 +29,7 @@ users = sqlalchemy.Table(   # Table - класс для создания таб�
 products = sqlalchemy.Table(   # Table - класс для создания таблицы   
     "products",
     metadata,
-    sqlalchemy.Column("product_id", sqlalchemy.Integer, primary_key=True),   # поле id целого типа, заполняется автоматически
+    sqlalchemy.Column("product_id", sqlalchemy.Integer, primary_key=True),   
     sqlalchemy.Column("product", sqlalchemy.String(32)),
     sqlalchemy.Column("description", sqlalchemy.String(32)),
     sqlalchemy.Column("price", sqlalchemy.String(32)),
@@ -39,7 +39,7 @@ products = sqlalchemy.Table(   # Table - класс для создания та
 orders = sqlalchemy.Table(   # Table - класс для создания таблицы   
     "orders",
     metadata,
-    sqlalchemy.Column("order_id", sqlalchemy.Integer, primary_key=True),   # поле id целого типа, заполняется автоматически
+    sqlalchemy.Column("order_id", sqlalchemy.Integer, primary_key=True),   
     sqlalchemy.Column("customer", sqlalchemy.String()),  #()?
     sqlalchemy.Column("order_product", sqlalchemy.String()),   #()?
     sqlalchemy.Column("date", sqlalchemy.String(32)),
@@ -64,7 +64,7 @@ class User(BaseModel):
     password: str = Field(max_length=32)
     #is_active: Boolean = Field(default=True)  # статус наличия
 
-class UserIn(BaseModel):         # добавление нового пользователя, идентификатор добавляется автоматически  
+class UserIn(BaseModel):
     first_name: str = Field(max_length=32) 
     second_name: str = Field(max_length=32)
     email: str = Field(max_length=32) 
@@ -97,13 +97,9 @@ class OrderIn(BaseModel):         # добавление нового заказ
     order_product: str   # вторичный ключ
     date: str = Field(max_length=32)   #  дата заказа
 
-
-
-
-
 #==============
-@app.get("/fake/{count}")  # сгенерируем несколько тестовых пользователей в базе данных
-async def create_note(count: int): # синхронный запрос к функции
+@app.get("/fake/{count}")  # тестовые таблицы в базе данных
+async def create_note(count: int): 
     for i in range(count):
         query_users = users.insert().values(first_name=f'first_name{i+1}', second_name=f'second_name{i+1}', email=f'mail{i+1}@mail.ru', password=f'password{i+1}')
         query_products = products.insert().values(product=f'product{i+1}', description=f'description{i+1}', price=f'price{i+1}')
@@ -159,8 +155,8 @@ async def delete_user(user_id: int):
 # 1. Создание товара в БД, create
 @app.post("/products/", response_model=Product)
 async def create_product(product: ProductIn):
-    query = products.insert().values(**product.dict())  # insert -вставить    #    ... идентичны \  превращение модели в питоновский словарь, ** - распаковка словаря  
-    last_record_id = await database.execute(query) # асинхроныый запрос, передача запроса в команду execute - выполнить и запись в переменную last_record_id
+    query = products.insert().values(**product.dict())   
+    last_record_id = await database.execute(query) 
     return {**products.dict(), "id": last_record_id}
 
 # 2. Чтение товара из БД, read
@@ -171,7 +167,7 @@ async def read_products():
 
 # 2a. Выборка из базы данных
 @app.get("/products/", response_model=List[Product])
-async def get_items_product(skip: int, limit: int):  # выборка - получить limit записей начиная с skip адреса(пропустив skip записей)
+async def get_items_product(skip: int, limit: int):  
     query = products.select().offset(skip).limit(limit)
     results = await database.fetch_all(query)
     return [dict(result) for result in results]
@@ -200,8 +196,8 @@ async def delete_product(product_id: int):
 # 1. Создание заказа в БД, create
 @app.post("/orders/", response_model=Order)
 async def create_order(order: OrderIn):
-    query = orders.insert().values(**order.dict())  # insert -вставить    #    ... идентичны \  превращение модели в питоновский словарь, ** - распаковка словаря  
-    last_record_id = await database.execute(query) # асинхроныый запрос, передача запроса в команду execute - выполнить и запись в переменную last_record_id
+    query = orders.insert().values(**order.dict())    
+    last_record_id = await database.execute(query)
     return {**orders.dict(), "id": last_record_id}
 
 # 2. Чтение заказов из БД, read
@@ -212,7 +208,7 @@ async def read_orders():
 
 # 2a. Выборка из базы данных
 @app.get("/orders/", response_model=List[Order])
-async def get_items_order(skip: int, limit: int):  # выборка - получить limit записей начиная с skip адреса(пропустив skip записей)
+async def get_items_order(skip: int, limit: int):  
     query = orders.select().offset(skip).limit(limit)
     results = await database.fetch_all(query)
     return [dict(result) for result in results]
